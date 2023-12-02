@@ -8,7 +8,7 @@ import Notifications from "@/components/notification/Notifications";
 export const metadata = {
   title: "Pet Classify Hub",
   description: "Pet Classify Hub is a web app for pet lovers.",
-  icons: { icon: "/logo.jpg" },
+  icons: { icon: "/logo.png" },
 };
 
 export default function RootLayout({ children }) {

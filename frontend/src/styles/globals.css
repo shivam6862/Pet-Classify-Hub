@@ -17,7 +17,7 @@ a {
   display: none;
 }
 :root {
-  --primary-color: #e8b059;
+  --primary-color: #f1356d;
   --ft-300: 12px;
   --ft-350: 14px;
   --ft-400: 16px;
@@ -27,4 +27,5 @@ a {
   --ft-800: 32px;
   --ft-900: 36px;
   --ft-1000: 40px;
+  --white-color: #ffffff;
 }
