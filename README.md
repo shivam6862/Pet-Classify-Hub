@@ -69,3 +69,9 @@ To train new models, follow these steps:
 2. **Place the dataset in the `data` directory.**
 
 3. **Use the training functionality in the app to train and test new models.**
+
+## Snapshot
+
+### Result
+
+![Result](./IMAGE.png)

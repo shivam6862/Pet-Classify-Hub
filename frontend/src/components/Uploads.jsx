@@ -25,6 +25,8 @@ const Uploads = ({ images, setImages }) => {
                 const url = URL.createObjectURL(files[i]);
                 const name = files[i].name.split(".")[0];
                 const id = v4();
+                if (images.filter((item) => item.name === name).length > 0)
+                  continue;
                 URLS.push({ url: url, name: name, id: id, file: files[i] });
               }
               setImages([...images, ...URLS]);
@@ -33,11 +35,12 @@ const Uploads = ({ images, setImages }) => {
         />
       </div>
       <div className={classes.images}>
+        {images.length > 0 && <h2>Selected Image for Predication</h2>}
         {images.map((item, index) => (
           <div key={index} className={classes.image}>
             <Image src={item.url} alt="img" height={250} width={250} />
             <Link href={item.url} target="_blank">
-              <div className={classes.name}>{item.name}</div>
+              <div className={classes.name}>Image Name:- {item.name}</div>
             </Link>
             <div
               className={classes.delete}

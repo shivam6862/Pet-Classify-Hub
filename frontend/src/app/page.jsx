@@ -11,6 +11,7 @@ export default function Home() {
   const [prediction, setPrediction] = useState([]);
   const submit = async () => {
     const response = await predictpetclassifyhub(images);
+    setImages([]);
     setPrediction(response);
   };
 

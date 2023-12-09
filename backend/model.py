@@ -83,12 +83,11 @@ class Models:
         print("full_path_test", full_path_test)
 
         test_images_df = []
-        for filename in os.listdir(full_path_test):
-            if filename.endswith(".jpg"):
-                image_path = os.path.join(full_path_test, filename)
-                print("Loading image number :- ", len(test_images_df))
-                img = cv2.imread(image_path)
-                test_images_df.append(img)
+        for filename in dataset:
+            image_path = os.path.join(full_path_test, filename)
+            print("image_path", image_path)
+            img = cv2.imread(image_path)
+            test_images_df.append(img)
 
         print("Shape of images array:", len(test_images_df))
         test_images_df = [cv2.resize(
