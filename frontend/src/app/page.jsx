@@ -26,7 +26,7 @@ export default function Home() {
             <Image src={item.url} alt="img" width={250} height={250} />
             <div>
               <h5>Name: {item.name}</h5>
-              <p>Prediction: {item.prediction}</p>
+              <p>Prediction: {item.prediction == 0 ? "Cat" : "Dog"}</p>
             </div>
           </div>
         ))}

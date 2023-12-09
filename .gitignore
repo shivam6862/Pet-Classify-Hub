@@ -2,6 +2,7 @@ backend/__pycache__
 backend/env
 backend/uploads
 backend/data.csv
+backend/data
 data
 frontend/.next
 frontend/node_modules

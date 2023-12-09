@@ -1,13 +1,9 @@
 # Import necessary libraries
-import pandas as pd
-import tensorflow as tf
 import numpy as np
 from tensorflow import keras
-import matplotlib.pyplot as plt
-import csv
 import os
 import sys
-from PIL import Image
+import cv2
 
 # Define the upload folder
 UPLOAD_FOLDER = 'uploads'
@@ -20,59 +16,96 @@ class Models:
     def __init__(self):
         # Initialize Linear Regression and Logistic Regression models and decision tree
         print("Initializing models...")
-        self.cnn_model = keras.models.Sequential([])
+        self.image_size_pixels = 120
+        self.cnn_model = keras.models.Sequential([
+            keras.layers.Conv2D(filters=32, kernel_size=3,
+                                input_shape=(self.image_size_pixels, self.image_size_pixels, 3), activation='relu'),
+            keras.layers.MaxPooling2D(pool_size=2),
+            keras.layers.Conv2D(filters=64, kernel_size=3, activation='relu'),
+            keras.layers.MaxPooling2D(pool_size=2),
+            keras.layers.Conv2D(filters=128, kernel_size=3, activation='relu'),
+            keras.layers.MaxPooling2D(pool_size=2),
+            keras.layers.Flatten(),
+            keras.layers.Dense(64, activation='relu'),
+            keras.layers.Dense(1, activation='sigmoid')
+        ])
         self.cnn_model.compile(optimizer='adam',
-                               loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+                               loss='binary_crossentropy', metrics=['accuracy'])
 
         print("Models initialized!")
 
         if not os.path.exists(UPLOAD_FOLDER):
             os.makedirs(UPLOAD_FOLDER)
-        print("Model created!")
+        folder_path_train = "./data"
+        current_directory = os.getcwd()
+        full_path_train = os.path.join(current_directory, folder_path_train)
+        full_path_train = os.path.normpath(full_path_train)
+        print("full_path_train", full_path_train)
 
-        updated_data_df = pd.read_csv(csv_file_path)
-        print("updated_data_df", updated_data_df.head())
-        x_train = []
-        y_train = []
+        train_images_df = []
+        train_labels_df = []
+        for filename in os.listdir(full_path_train):
+            if filename.endswith(".jpg"):
+                image_path = os.path.join(full_path_train, filename)
+                if len(train_images_df) % 100 == 0:
+                    print(len(train_images_df))
+                img = cv2.imread(image_path)
+                train_images_df.append(img)
+                train_labels_df.append(filename.split(".")[0])
+        print("Shape of images array:", len(train_images_df))
+        print("Shape of labels array:", train_labels_df[0:10])
+        print("Shape of labels array:", train_labels_df[:10])
 
-        print("x_train", x_train)
-        print("y_train", y_train)
-        print("Dataframe created")
-        self.cnn_model.fit(
-            x_train, y_train, epochs=5, batch_size=32, validation_split=0.2
-        )
+        train_labels_df = np.array(train_labels_df)
+        train_labels_df[train_labels_df == 'cat'] = 0
+        train_labels_df[train_labels_df == 'dog'] = 1
+        train_labels_df = train_labels_df.astype(np.int32)
+        print(train_labels_df[0:10])
+        print(train_labels_df[190:])
+
+        train_images_df = [cv2.resize(
+            img, (self.image_size_pixels, self.image_size_pixels)) for img in train_images_df]
+        train_images_df = np.array(train_images_df)
+        train_images_df = train_images_df / (self.image_size_pixels-1)
+
+        self.cnn_model.fit(train_images_df, train_labels_df, epochs=20,
+                           batch_size=16, verbose=1, validation_split=0.15)
         print("Model worked successfully.")
 
     def model(self, dataset):
         print("dataset", dataset)
 
-        new_dataset = []
-        for image_file in dataset:
-            try:
-                current_directory = os.getcwd()
-                image_path = os.path.join(
-                    current_directory, "uploads", image_file)
-                print("/uploads/image_path", image_path)
+        folder_path_test = "./uploads"
+        print("folder_path_test", folder_path_test)
+        current_directory = os.getcwd()
+        full_path_test = os.path.join(current_directory, folder_path_test)
+        full_path_test = os.path.normpath(full_path_test)
+        print("full_path_test", full_path_test)
 
-                with Image.open(image_path) as image:
-                    image = image.convert('L')
-                    image = image.resize((28, 28))
-                    pixel_values = (np.array(image).flatten()).tolist()
-                    new_dataset.append(pixel_values)
+        test_images_df = []
+        for filename in os.listdir(full_path_test):
+            if filename.endswith(".jpg"):
+                image_path = os.path.join(full_path_test, filename)
+                print("Loading image number :- ", len(test_images_df))
+                img = cv2.imread(image_path)
+                test_images_df.append(img)
 
-            except Exception as e:
-                print(f"Error processing {image_file}: {e}")
+        print("Shape of images array:", len(test_images_df))
+        test_images_df = [cv2.resize(
+            img, (self.image_size_pixels, self.image_size_pixels)) for img in test_images_df]
 
-        new_dataset_array = np.array(new_dataset)
-        reshaped_dataset = new_dataset_array
+        test_images_df = np.array(test_images_df)
+        test_images_df = test_images_df / (self.image_size_pixels-1)
+        print("test_images_df shape :- ", test_images_df.shape)
 
-        y_predicted_x_test_df = self.cnn_model.predict(reshaped_dataset)
+        y_classes_x_test_df = self.cnn_model.predict(test_images_df)
+        y_predicted_x_test_df = np.round(y_classes_x_test_df).astype(
+            int).reshape(test_images_df.shape[0])
+        print("y_predicted_x_test_df", y_predicted_x_test_df)
 
-        y_classes_x_test_df = [np.argmax(i) for i in y_predicted_x_test_df]
+        y_predicted_x_test_df = ','.join(
+            [str(elem) for elem in y_predicted_x_test_df])
 
-        y_classes_x_test_df = ','.join(
-            [str(elem) for elem in y_classes_x_test_df])
+        print("predictions", y_predicted_x_test_df)
 
-        print("predictions", y_classes_x_test_df)
-
-        return y_classes_x_test_df
+        return y_predicted_x_test_df

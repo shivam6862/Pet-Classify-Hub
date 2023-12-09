@@ -2,7 +2,7 @@
 
 ## Overview
 
-Pet Classify Hub is an application designed for classifying images of pets, specifically cats and dogs. This project utilizes a user-friendly web interface built with Next.js for the frontend and a backend server powered by Flask. The classification models are implemented using TensorFlow, including both Artificial Neural Network (ANN) and Convolutional Neural Network (CNN) models.
+Pet Classify Hub is an application designed for classifying images of pets, specifically cats and dogs. This project utilizes a user-friendly web interface built with Next.js for the frontend and a backend server powered by Flask. The classification models are implemented using TensorFlow, Convolutional Neural Network (CNN) models.
 
 ## Features
 
@@ -69,15 +69,3 @@ To train new models, follow these steps:
 2. **Place the dataset in the `data` directory.**
 
 3. **Use the training functionality in the app to train and test new models.**
-
-## Contributing
-
-If you'd like to contribute to this project, please follow the guidelines in [CONTRIBUTING.md](CONTRIBUTING.md).
-
-## License
-
-This project is licensed under the [MIT License](LICENSE).
-
-## Acknowledgments
-
-- Special thanks to shivam6862 for contributing to the project.
